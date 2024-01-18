@@ -1,30 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
 
-class Window:
-    def __init__(self, width, height) -> None:
-        self.__root = Tk()
-        self.__root.title("Maze Solver")
-        self.canvas = Canvas(self.__root, bg="white", height=height, width=width)
-        self.canvas.pack(fill=BOTH, expand=0)
-        self.__running = False
-        self.__root.protocol("WM_DELETE_WINDOW", self.close)
-
-    def redraw(self):
-        self.__root.update_idletasks()
-        self.__root.update()
-
-
-    def wait_for_close(self):
-        self.__running = True
-        while self.__running:
-            self.redraw()
-        print("User exited...")
-
-    def close(self):
-        self.__running = False
-
-
-
 
 class Point:
     def __init__(self, x: int, y: int) -> None:
@@ -38,7 +13,6 @@ class Point:
         return f"Point({self.x}, {self.y})"
 
 
-
 class Line:
     def __init__(self, p1: Point, p2: Point) -> None:
         self.p1 = p1
@@ -46,13 +20,38 @@ class Line:
 
     def draw(self, canvas: Canvas, fill_color="black"):
         canvas.create_line(
-            self.p1.x, self.p1.y, self.p2.x, self.p2.y,
+            self.p1.x, self.p1.y, 
+            self.p2.x, self.p2.y,
             fill=fill_color,
             width=2
         )
         canvas.pack()
 
 
+class Window:
+    def __init__(self, width, height) -> None:
+        self.__root = Tk()
+        self.__root.title("Maze Solver")
+        self.__canvas = Canvas(self.__root, bg="white", height=height, width=width)
+        self.__canvas.pack(fill=BOTH, expand=0)
+        self.__running = False
+        self.__root.protocol("WM_DELETE_WINDOW", self.close)
+
+    def redraw(self):
+        self.__root.update_idletasks()
+        self.__root.update()
+
+    def draw_line(self, line: Line, fill_color="black"):
+        line.draw(self.__canvas, fill_color=fill_color)
+
+    def wait_for_close(self):
+        self.__running = True
+        while self.__running:
+            self.redraw()
+        print("User exited...")
+
+    def close(self):
+        self.__running = False
 
 
 class Cell:
@@ -69,21 +68,30 @@ class Cell:
     
     def draw(self):
         if self.has_left_wall:
-            Line(
-                Point(self._x1, self._y1), Point(self._x1, self._y2)
-            ).draw(self._win.canvas)
+            left = Line(
+                Point(self._x1, self._y1), 
+                Point(self._x1, self._y2)
+            )
+            self._win.draw_line(left, "black")
 
         if self.has_right_wall:
-            Line(
-                Point(self._x2, self._y1), Point(self._x2, self._y2)
-            ).draw(self._win.canvas)
+            right = Line(
+                Point(self._x2, self._y1), 
+                Point(self._x2, self._y2)
+            )
+            self._win.draw_line(right, "black")
 
         if self.has_top_wall:
-            Line(
-                Point(self._x1, self._y1), Point(self._x2, self._y1)
-            ).draw(self._win.canvas)
+            top = Line(
+                Point(self._x1, self._y1), 
+                Point(self._x2, self._y1)
+            )
+            self._win.draw_line(top, "black")
+
 
         if self.has_bottom_wall:
-            Line(
-                Point(self._x1, self._y2), Point(self._x2, self._y2)
-            ).draw(self._win.canvas)
+            bottom = Line(
+                Point(self._x1, self._y2), 
+                Point(self._x2, self._y2)
+            )
+            self._win.draw_line(bottom, "black")
