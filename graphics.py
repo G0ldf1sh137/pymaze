@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from tkinter import Tk, BOTH, Canvas
+import time
 
 
 class Point:
@@ -19,6 +20,9 @@ class Line:
     def __init__(self, p1: Point, p2: Point) -> None:
         self.p1 = p1
         self.p2 = p2
+
+    def __str__(self):
+        return f"(({self.p1.x},{self.p1.y})-({self.p2.x},{self.p2.y}))"
     
     def draw(self, canvas: Canvas, fill_color="black"):
         canvas.create_line(
@@ -70,13 +74,13 @@ class Cell:
     
     def draw(self):
         if self.has_left_wall:
-            self._win.draw_line(self.left_wall, "black")
+            self._win.draw_line(self.left_wall)
         if self.has_right_wall:
-            self._win.draw_line(self.right_wall, "black")
+            self._win.draw_line(self.right_wall)
         if self.has_top_wall:
-            self._win.draw_line(self.top_wall, "black")
+            self._win.draw_line(self.top_wall)
         if self.has_bottom_wall:
-            self._win.draw_line(self.bottom_wall, "black")
+            self._win.draw_line(self.bottom_wall)
     
     @property
     def width(self) -> int:
@@ -148,3 +152,52 @@ class Cell:
             fill = "gray"
         line = Line(self.center, to_cell.center)
         self._win.draw_line(line, fill_color=fill)
+
+class Maze:
+    def __init__(
+            self,
+            x1: int,
+            y1: int,
+            num_rows: int,
+            num_cols: int,
+            cell_size_x: int,
+            cell_size_y: int,
+            win: Window
+    ):
+        self._x1 = x1
+        self._y1 = y1
+        self._num_rows = num_rows
+        self._num_cols = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
+        self._win = win
+        self._create_cells()
+
+    def _create_cells(self):
+        self._cells: list[list[Cell]] = []
+        for c in range(self._num_cols):
+            cell_col: list[Cell] = []
+            for r in range(self._num_rows):
+                x1 = self._x1 + (r * self._cell_size_x)
+                x2 = x1 + self._cell_size_x
+                y1 = self._y1 + (c * self._cell_size_y)
+                y2 = y1 + self._cell_size_y
+                cell = Cell(x1, y1, x2, y2, self._win)
+                cell_col.append(cell)
+            self._cells.append(cell_col)
+
+        for c in range(self._num_cols):
+            for r in range(self._num_rows):
+                self._draw_cell(c, r)
+        
+
+    def _draw_cell(self, i: int, j: int):
+        self._cells[i][j].draw()
+        self._animate()
+
+    def _animate(self):
+        self._win.redraw()
+        time.sleep(0.05)
+
+    def get_cell(self, x: int, y: int) -> Cell:
+        return self._cells[y][x]

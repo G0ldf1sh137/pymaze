@@ -1,26 +1,14 @@
-from graphics import Window, Point, Line, Cell
+from graphics import Window, Point, Line, Cell, Maze
 
 
 
 def main():
     win = Window(800, 600)
 
-
-    c1 = Cell(100, 100, 200, 200, win)
-    c1.has_bottom_wall = False
-    c2 = Cell(300, 100, 400, 200, win)
-    c2.has_right_wall = False
-    c2.has_left_wall = False
-    c3 = Cell(100, 200, 200, 300, win)
-    c3.has_top_wall = False
-    
-    
-    c1.draw()
-    c2.draw()
-    c3.draw()
-
+    maze = Maze(10,10,12,10,50,50,win)
+    c1 = maze.get_cell(1,5)
+    c2 = maze.get_cell(2,5)
     c1.draw_move(c2)
-    c1.draw_move(c3, True)
 
     win.wait_for_close()
 
