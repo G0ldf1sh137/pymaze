@@ -5,18 +5,34 @@ from maze import Maze
 
 
 class Tests(unittest.TestCase):
+
+    def setUp(self):
+        self.num_cols = 10
+        self.num_rows = 10
+        self.maze = Maze(0, 0, self.num_rows, self.num_cols, 10, 10)
+    
     def test_maze_create_cells(self):
-        num_cols = 10
-        num_rows = 10
-        win = Window(550,550)
-        m1 = Maze(25, 25, num_rows, num_cols, 50, 50)
         self.assertEqual(
-            len(m1._cells),
-            num_cols,
+            len(self.maze._cells),
+            self.num_cols,
         )
         self.assertEqual(
-            len(m1._cells[0]),
-            num_rows,
+            len(self.maze._cells[0]),
+            self.num_rows,
+        )
+
+    def test_entrance(self):
+        entrance = self.maze.get_cell(0, 0)
+        self.assertEqual(
+            entrance.has_top_wall,
+            False,
+        )
+
+    def test_exit(self):
+        exit = self.maze.get_cell(self.num_rows-1, self.num_cols-1)
+        self.assertEqual(
+            exit.has_bottom_wall,
+            False,
         )
 
 if __name__ == "__main__":
