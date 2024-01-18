@@ -30,24 +30,27 @@ class Maze:
     def _create_cells(self):
         """
         Initilizes self._cells as a list of list of Cell objects. The top level
-        list references the column of the maze, the inner list references the
-        row of the Cell
+        list references the row position of the maze, the inner list references
+        the column of the Cell
         """
         self._cells: list[list[Cell]] = []
-        for c in range(self._num_cols):
-            cell_col: list[Cell] = []
-            for r in range(self._num_rows):
+        for r in range(self._num_rows):
+            cell_row: list[Cell] = []
+            for c in range(self._num_cols):
                 x1 = self._x1 + (r * self._cell_size_x)
                 x2 = x1 + self._cell_size_x
                 y1 = self._y1 + (c * self._cell_size_y)
                 y2 = y1 + self._cell_size_y
                 cell = Cell(x1, y1, x2, y2, self._win)
-                cell_col.append(cell)
-            self._cells.append(cell_col)
+                cell_row.append(cell)
+            self._cells.append(cell_row)
+        self._draw_all_cells()
     
+    def _draw_all_cells(self) -> None:
+        """loops through all cells in self._cells and calls _draw_cell"""
         for c in range(self._num_cols):
             for r in range(self._num_rows):
-                self._draw_cell(c, r)
+                self._draw_cell(r, c)
         
     
     def _draw_cell(self, i: int, j: int):
@@ -64,15 +67,18 @@ class Maze:
         before drawing the next frame
         """
         self._win.redraw()
-        time.sleep(0.05)
+        time.sleep(0.01)
     
     def get_cell(self, x: int, y: int) -> Cell:
         """Returns a Cell from within the maze based on the x/y index"""
-        return self._cells[y][x]
+        return self._cells[x][y]
     
     def _break_entrance_and_exit(self):
         """Removes the entrance and exit walls from maze"""
         self.get_cell(0, 0).has_top_wall = False
         self._draw_cell(0, 0)
-        self.get_cell(self._num_rows -1, self._num_cols -1).has_bottom_wall = False
-        self._draw_cell(self._num_rows -1, self._num_cols -1)
+        self.get_cell(
+            self._num_rows - 1, 
+            self._num_cols - 1
+        ).has_bottom_wall = False
+        self._draw_cell(self._num_rows - 1, self._num_cols - 1)
