@@ -60,7 +60,7 @@ class Window:
 
 
 class Cell:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, win: Window) -> None:
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, win: Window=None) -> None:
         self.has_left_wall = True
         self.has_right_wall = True
         self.has_top_wall = True
@@ -74,12 +74,20 @@ class Cell:
     def draw(self):
         if self.has_left_wall:
             self._win.draw_line(self.left_wall)
+        else:
+            self._win.draw_line(self.left_wall, 'white')
         if self.has_right_wall:
             self._win.draw_line(self.right_wall)
+        else:
+            self._win.draw_line(self.right_wall, 'white')
         if self.has_top_wall:
             self._win.draw_line(self.top_wall)
+        else:
+            self._win.draw_line(self.top_wall, 'white')
         if self.has_bottom_wall:
             self._win.draw_line(self.bottom_wall)
+        else:
+            self._win.draw_line(self.bottom_wall, 'white')
     
     @property
     def width(self) -> int:
