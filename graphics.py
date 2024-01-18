@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tkinter import Tk, BOTH, Canvas
 
 
@@ -5,7 +7,7 @@ class Point:
     def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
-
+    
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
     
@@ -17,7 +19,7 @@ class Line:
     def __init__(self, p1: Point, p2: Point) -> None:
         self.p1 = p1
         self.p2 = p2
-
+    
     def draw(self, canvas: Canvas, fill_color="black"):
         canvas.create_line(
             self.p1.x, self.p1.y, 
@@ -36,20 +38,20 @@ class Window:
         self.__canvas.pack(fill=BOTH, expand=0)
         self.__running = False
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
-
+    
     def redraw(self):
         self.__root.update_idletasks()
         self.__root.update()
-
+    
     def draw_line(self, line: Line, fill_color="black"):
         line.draw(self.__canvas, fill_color=fill_color)
-
+    
     def wait_for_close(self):
         self.__running = True
         while self.__running:
             self.redraw()
         print("User exited...")
-
+    
     def close(self):
         self.__running = False
 
@@ -68,30 +70,81 @@ class Cell:
     
     def draw(self):
         if self.has_left_wall:
-            left = Line(
-                Point(self._x1, self._y1), 
-                Point(self._x1, self._y2)
-            )
-            self._win.draw_line(left, "black")
-
+            self._win.draw_line(self.left_wall, "black")
         if self.has_right_wall:
-            right = Line(
-                Point(self._x2, self._y1), 
-                Point(self._x2, self._y2)
-            )
-            self._win.draw_line(right, "black")
-
+            self._win.draw_line(self.right_wall, "black")
         if self.has_top_wall:
-            top = Line(
-                Point(self._x1, self._y1), 
-                Point(self._x2, self._y1)
-            )
-            self._win.draw_line(top, "black")
-
-
+            self._win.draw_line(self.top_wall, "black")
         if self.has_bottom_wall:
-            bottom = Line(
-                Point(self._x1, self._y2), 
-                Point(self._x2, self._y2)
-            )
-            self._win.draw_line(bottom, "black")
+            self._win.draw_line(self.bottom_wall, "black")
+    
+    @property
+    def width(self) -> int:
+        return self._x2 - self._x1
+    
+    @property
+    def height(self) -> int:
+        return self._y2 - self._y1
+    
+    @property
+    def center(self) -> Point:
+        return Point(
+            self._x1 + (self.width / 2), 
+            self._y1 + (self.height / 2)
+        )
+    
+    @property
+    def top(self) -> int:
+        return self._y1
+    
+    @property
+    def bottom(self) -> int:
+        return self._y2
+    
+    @property
+    def left(self) -> int:
+        return self._x1
+    
+    @property
+    def right(self) -> int:
+        return self._x2
+    
+    @property
+    def top_left(self) -> Point:
+        return Point(self._x1, self._y1)
+    
+    @property
+    def top_right(self) -> Point:
+        return Point(self._x2, self._y1)
+    
+    @property
+    def bottom_left(self) -> Point:
+        return Point(self._x1, self._y2)
+    
+    @property
+    def bottom_right(self) -> Point:
+        return Point(self._x2, self._y2)
+    
+    @property
+    def top_wall(self) -> Line:
+        return Line(self.top_left, self.top_right)
+    
+    @property
+    def bottom_wall(self) -> Line:
+        return Line(self.bottom_left, self.bottom_right)
+    
+    @property
+    def left_wall(self) -> Line:
+        return Line(self.top_left, self.bottom_left)
+    
+    @property
+    def right_wall(self) -> Line:
+        return Line(self.top_right, self.bottom_right)
+    
+    def draw_move(self, to_cell: Cell, undo=False):
+        if not undo:
+            fill = "red"
+        else:
+            fill = "gray"
+        line = Line(self.center, to_cell.center)
+        self._win.draw_line(line, fill_color=fill)

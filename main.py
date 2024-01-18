@@ -11,9 +11,16 @@ def main():
     c2 = Cell(300, 100, 400, 200, win)
     c2.has_right_wall = False
     c2.has_left_wall = False
+    c3 = Cell(100, 200, 200, 300, win)
+    c3.has_top_wall = False
+    
+    
     c1.draw()
     c2.draw()
+    c3.draw()
 
+    c1.draw_move(c2)
+    c1.draw_move(c3, True)
 
     win.wait_for_close()
 
